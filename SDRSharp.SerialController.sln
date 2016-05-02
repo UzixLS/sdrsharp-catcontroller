@@ -1,0 +1,18 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+# SharpDevelop 5.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDRSharp.SerialController", "SDRSharp.SerialController.csproj", "{41C6CC2E-5F1D-4BFC-9676-381AD488FCD6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{41C6CC2E-5F1D-4BFC-9676-381AD488FCD6}.Debug|Any CPU.ActiveCfg = Release|x86
+		{41C6CC2E-5F1D-4BFC-9676-381AD488FCD6}.Debug|Any CPU.Build.0 = Release|x86
+		{41C6CC2E-5F1D-4BFC-9676-381AD488FCD6}.Release|Any CPU.ActiveCfg = Release|x86
+		{41C6CC2E-5F1D-4BFC-9676-381AD488FCD6}.Release|Any CPU.Build.0 = Release|x86
+	EndGlobalSection
+EndGlobal
