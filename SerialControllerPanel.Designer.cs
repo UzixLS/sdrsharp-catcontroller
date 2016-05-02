@@ -61,7 +61,7 @@
         	this.btnRefreshPorts.Image = ((System.Drawing.Image)(resources.GetObject("btnRefreshPorts.Image")));
         	this.btnRefreshPorts.Location = new System.Drawing.Point(188, 2);
         	this.btnRefreshPorts.Name = "btnRefreshPorts";
-        	this.btnRefreshPorts.Size = new System.Drawing.Size(30, 23);
+        	this.btnRefreshPorts.Size = new System.Drawing.Size(30, 30);
         	this.btnRefreshPorts.TabIndex = 3;
         	this.btnRefreshPorts.UseVisualStyleBackColor = true;
         	this.btnRefreshPorts.Click += new System.EventHandler(this.BtnRefreshPortsClick);
@@ -89,8 +89,8 @@
         	this.label1.Name = "label1";
         	this.label1.Size = new System.Drawing.Size(215, 46);
         	this.label1.TabIndex = 6;
-        	this.label1.Text = "This plugin receives AR ONE commands from UniTrunker and sets frequency according" +
-	"ly. Made by pewusoft, 2015";
+        	this.label1.Text = "Accept some TS-50 CAT commands via serial interface. " +
+							    "Made by Uzix, 2016. Based on plugin by pewusoft, 2015";
         	// 
         	// SerialControllerPanel
         	// 

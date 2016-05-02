@@ -20,36 +20,41 @@ namespace SDRSharp.SerialController
 			set { this._enableLogging = value; }
 			get { return this._enableLogging; }
 		}
+		public bool IsOpen {
+			get { return _port != null && _port.IsOpen; }
+		}
 		
 		StreamWriter logger;
 		SerialPort _port;
 		
 		public delegate void FrequencyChangeHandler(object sender, long freq);
     	public event FrequencyChangeHandler OnFrequencyChange;
+    	
+    	public delegate long GetFrequencyHandler();
+    	public event GetFrequencyHandler OnGetFrequency;
+    	
 				
     	public static string[] GetAllPorts()
 		{
 			try {
 				return SerialPort.GetPortNames();
-			} catch {
-				MessageBox.Show("Exception while getting available serial ports", "SerialController", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    		} catch (Exception e) {
+    			MessageBox.Show("Cannot read port list:\n"+e.ToString(), "SerialController", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return new string[0];
 			}
 		}
 		
 		public bool openPort(string portName) {
 			try {
-	    		if (_port != null && _port.IsOpen) {
+	    		if (_port != null && _port.IsOpen)
 					return false;
-				}
     			
     			if (portName == null || (portName.Trim().Equals("")))
     				return false;
 
 				_port = new SerialPort(portName, 9600, Parity.None, 8, StopBits.One);
-				_port.DataReceived += Port_DataReceived;
-			
-			
+				_port.DataReceived += new SerialDataReceivedEventHandler( Port_DataReceived );
+						
 				if (_port != null) {
 					_port.Open();
 					if (_enableLogging) {
@@ -59,8 +64,9 @@ namespace SDRSharp.SerialController
 					return true;
 				}
 				return false;
-			} catch (Exception) {
-    			MessageBox.Show("Couldn't open port "+portName, "SerialController", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			} catch (Exception e) {
+    			MessageBox.Show("Couldn't open port "+portName+":\n"+e.ToString(), "SerialController",
+    			                MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 		}
@@ -87,15 +93,33 @@ namespace SDRSharp.SerialController
 		
 		void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-			if (OnFrequencyChange == null) return;
+			string data = "";
+			while( data.IndexOf(';') < 0 ) {
+				byte[] bytes = new byte[_port.BytesToRead+32];
+				try {
+					_port.Read(bytes, 0, _port.BytesToRead);
+				}
+				catch (Exception) {
+					log("Error reading COM port");
+					return;
+				}
+				data += System.Text.Encoding.UTF8.GetString(bytes);
+			}
+			data = data.Substring(0, data.IndexOf(';'));
 			
-			string data = _port.ReadLine();
-			// log commands to file
-			log("Received on COM port: "+data);
-			// AR-ONE RF command parse, as simple as can be, but faster than regex
-			if (data.StartsWith("RF", StringComparison.Ordinal)) {
+			// TS-50 command parse
+			if (data.StartsWith("IF", StringComparison.Ordinal)) {
+				long freq = OnGetFrequency();
+				string response = "IF";
+				response += String.Format("{0:00000000000}", freq);
+				response += "000000000000000000000000;";
+				_port.Write(response);
+			}
+			if (data.StartsWith("FA", StringComparison.Ordinal)) {
 				long freq;
-				if (long.TryParse(data.Substring("RF".Length), out freq)) {
+				if (long.TryParse(data.Substring(2), out freq)) {
+					log("Received on COM port: "+data);
+					if (OnFrequencyChange == null) return;
 					OnFrequencyChange(this, freq);
 					log("Changing frequency to: "+freq.ToString("N0"));
 				}

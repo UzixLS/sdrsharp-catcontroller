@@ -1,7 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 # SharpDevelop 5.1
+VisualStudioVersion = 12.0.20827.3
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDRSharp.SerialController", "SDRSharp.SerialController.csproj", "{41C6CC2E-5F1D-4BFC-9676-381AD488FCD6}"
 EndProject
 Global

@@ -45,7 +45,11 @@ namespace SDRSharp.SerialController
 		}
 		void CbEnableClick(object sender, EventArgs e)
 		{
-			cbEnable.Checked = cbEnable.Checked ? _serialPort.openPort(comboPorts.Text) : _serialPort.closePort();
+			if (! _serialPort.IsOpen)
+				_serialPort.openPort(comboPorts.Text);
+			else
+				_serialPort.closePort();
+			cbEnable.Checked = _serialPort.IsOpen;
 			comboPorts.Enabled = !cbEnable.Checked;
 			btnRefreshPorts.Enabled = !cbEnable.Checked;
 			cbLogToFile.Enabled = !cbEnable.Checked;

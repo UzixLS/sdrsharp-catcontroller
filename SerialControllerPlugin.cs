@@ -33,6 +33,7 @@ namespace SDRSharp.SerialController
             _control = control;
             _serialPort = new SerialPortCtrl();
 			_serialPort.OnFrequencyChange += UpdateFrequency;
+			_serialPort.OnGetFrequency += GetFrequency;
             
             _controlPanel = new SerialControllerPanel(_serialPort);
             _controlPanel.readSettings();
@@ -41,7 +42,10 @@ namespace SDRSharp.SerialController
         void UpdateFrequency(object sender, long freq) {
         	_control.Frequency = freq;
         	_controlPanel.addToLogList(freq.ToString("N0")+" Hz");
-        	
+        }
+        
+        long GetFrequency() {
+        	return _control.Frequency;
         }
         
         public void Close()

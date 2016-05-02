@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SDRSharp.SerialController</RootNamespace>
     <AssemblyName>SDRSharp.SerialController</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NoWin32Manifest>False</NoWin32Manifest>
@@ -63,7 +63,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>..\Release\</OutputPath>
+    <OutputPath>Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>True</Optimize>
     <DebugType>PdbOnly</DebugType>
@@ -82,6 +82,15 @@
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="SDRSharp.Common">
+      <HintPath>ReferencedDLLs\SDRSharp.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="SDRSharp.Radio">
+      <HintPath>ReferencedDLLs\SDRSharp.Radio.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -93,18 +102,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SerialPort.cs" />
-    <Reference Include="SDRSharp.Common, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>../Common/SDRSharp.Common.dll</HintPath>
-    </Reference>
     <!--<Reference Include="SDRSharp.PanView, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>../Common/SDRSharp.PanView.dll</HintPath>
     </Reference>-->
-    <Reference Include="SDRSharp.Radio, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>../Common/SDRSharp.Radio.dll</HintPath>
-    </Reference>
     <Compile Include="SerialControllerPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
