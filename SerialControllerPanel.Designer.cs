@@ -32,9 +32,7 @@
         	this.cbEnable = new System.Windows.Forms.CheckBox();
         	this.comboPorts = new System.Windows.Forms.ComboBox();
         	this.btnRefreshPorts = new System.Windows.Forms.Button();
-        	this.cbLogToFile = new System.Windows.Forms.CheckBox();
         	this.lbLog = new System.Windows.Forms.ListBox();
-        	this.label1 = new System.Windows.Forms.Label();
         	this.SuspendLayout();
         	// 
         	// cbEnable
@@ -61,47 +59,27 @@
         	this.btnRefreshPorts.Image = ((System.Drawing.Image)(resources.GetObject("btnRefreshPorts.Image")));
         	this.btnRefreshPorts.Location = new System.Drawing.Point(188, 2);
         	this.btnRefreshPorts.Name = "btnRefreshPorts";
-        	this.btnRefreshPorts.Size = new System.Drawing.Size(30, 30);
+        	this.btnRefreshPorts.Size = new System.Drawing.Size(24, 24);
         	this.btnRefreshPorts.TabIndex = 3;
         	this.btnRefreshPorts.UseVisualStyleBackColor = true;
         	this.btnRefreshPorts.Click += new System.EventHandler(this.BtnRefreshPortsClick);
         	// 
-        	// cbLogToFile
-        	// 
-        	this.cbLogToFile.Location = new System.Drawing.Point(3, 30);
-        	this.cbLogToFile.Name = "cbLogToFile";
-        	this.cbLogToFile.Size = new System.Drawing.Size(104, 24);
-        	this.cbLogToFile.TabIndex = 4;
-        	this.cbLogToFile.Text = "Log to file";
-        	this.cbLogToFile.UseVisualStyleBackColor = true;
-        	// 
         	// lbLog
         	// 
         	this.lbLog.FormattingEnabled = true;
-        	this.lbLog.Location = new System.Drawing.Point(3, 60);
+        	this.lbLog.Location = new System.Drawing.Point(3, 30);
         	this.lbLog.Name = "lbLog";
         	this.lbLog.Size = new System.Drawing.Size(215, 69);
-        	this.lbLog.TabIndex = 5;
-        	// 
-        	// label1
-        	// 
-        	this.label1.Location = new System.Drawing.Point(3, 132);
-        	this.label1.Name = "label1";
-        	this.label1.Size = new System.Drawing.Size(215, 46);
-        	this.label1.TabIndex = 6;
-        	this.label1.Text = "Accept some TS-50 CAT commands via serial interface. " +
-							    "Made by Uzix, 2016. Based on plugin by pewusoft, 2015";
+        	this.lbLog.TabIndex = 4;
         	// 
         	// SerialControllerPanel
         	// 
-        	this.Controls.Add(this.label1);
         	this.Controls.Add(this.lbLog);
-        	this.Controls.Add(this.cbLogToFile);
         	this.Controls.Add(this.btnRefreshPorts);
         	this.Controls.Add(this.comboPorts);
         	this.Controls.Add(this.cbEnable);
         	this.Name = "SerialControllerPanel";
-        	this.Size = new System.Drawing.Size(222, 201);
+        	this.Size = new System.Drawing.Size(222, 131);
         	this.ResumeLayout(false);
 
         }
@@ -111,9 +89,7 @@
         private System.Windows.Forms.CheckBox cbEnable;
         private System.Windows.Forms.ComboBox comboPorts;
         private System.Windows.Forms.Button btnRefreshPorts;
-        private System.Windows.Forms.CheckBox cbLogToFile;
         private System.Windows.Forms.ListBox lbLog;
-        private System.Windows.Forms.Label label1;
 
 
     }

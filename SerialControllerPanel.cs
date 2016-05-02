@@ -33,14 +33,12 @@ namespace SDRSharp.SerialController
 		
 		public void readSettings() {
 			comboPorts.Text = Utils.GetStringSetting("serialControlComPort", "");
-			cbLogToFile.Checked = Utils.GetBooleanSetting("serialControlLogToFile");
 			cbEnable.Checked = Utils.GetBooleanSetting("serialControlEnable");
 			CbEnableClick(null,null);
 		}
 		
 		public void saveSettings() {
 			Utils.SaveSetting("serialControlComPort", comboPorts.Text);
-			Utils.SaveSetting("serialControlLogToFile", cbLogToFile.Checked);
 			Utils.SaveSetting("serialControlEnable", cbEnable.Checked);
 		}
 		void CbEnableClick(object sender, EventArgs e)
@@ -52,8 +50,6 @@ namespace SDRSharp.SerialController
 			cbEnable.Checked = _serialPort.IsOpen;
 			comboPorts.Enabled = !cbEnable.Checked;
 			btnRefreshPorts.Enabled = !cbEnable.Checked;
-			cbLogToFile.Enabled = !cbEnable.Checked;
-			_serialPort.EnableLogging = cbLogToFile.Checked;
 		}
 		void CbEnableKeyDown(object sender, EventArgs e)
 		{

@@ -8,6 +8,7 @@ using System.IO.Ports;
 using System.IO;
 using System.Windows.Forms;
 
+
 namespace SDRSharp.SerialController
 {
 	/// <summary>
@@ -15,25 +16,24 @@ namespace SDRSharp.SerialController
 	/// </summary>
 	public class SerialPortCtrl
 	{
-		bool _enableLogging = true;
-		public bool EnableLogging {
-			set { this._enableLogging = value; }
-			get { return this._enableLogging; }
-		}
 		public bool IsOpen {
 			get { return _port != null && _port.IsOpen; }
 		}
 		
-		StreamWriter logger;
-		SerialPort _port;
+		char _separator;
+		public char separator {
+			get { return separator; }
+			set { this._separator = value; }
+		}
 		
-		public delegate void FrequencyChangeHandler(object sender, long freq);
-    	public event FrequencyChangeHandler OnFrequencyChange;
-    	
-    	public delegate long GetFrequencyHandler();
-    	public event GetFrequencyHandler OnGetFrequency;
-    	
-				
+		SerialPort _port;
+		SerialPktProcessor _pktprocessor;
+		
+		public SerialPortCtrl( SerialPktProcessor pktprocessor )
+		{
+			_pktprocessor = pktprocessor;
+		}
+		
     	public static string[] GetAllPorts()
 		{
 			try {
@@ -57,10 +57,6 @@ namespace SDRSharp.SerialController
 						
 				if (_port != null) {
 					_port.Open();
-					if (_enableLogging) {
-						prepareLogger();
-						log("Port " + _port.PortName + " opened");
-					}
 					return true;
 				}
 				return false;
@@ -76,10 +72,6 @@ namespace SDRSharp.SerialController
 				if (_port.IsOpen) {
 					try {
 						_port.Close();
-						if (_enableLogging) {
-							log("Port " + _port.PortName + " closed");
-							closeLogger();
-						}
 						return true;
 					} catch (IOException) {
 						return false;
@@ -94,69 +86,21 @@ namespace SDRSharp.SerialController
 		void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
 			string data = "";
-			while( data.IndexOf(';') < 0 ) {
+			while (data.IndexOf(_separator) < 0) {
 				byte[] bytes = new byte[_port.BytesToRead+32];
 				try {
 					_port.Read(bytes, 0, _port.BytesToRead);
 				}
 				catch (Exception) {
-					log("Error reading COM port");
 					return;
 				}
 				data += System.Text.Encoding.UTF8.GetString(bytes);
 			}
-			data = data.Substring(0, data.IndexOf(';'));
+			data = data.Substring(0, data.IndexOf(_separator));
 			
-			// TS-50 command parse
-			if (data.StartsWith("IF", StringComparison.Ordinal)) {
-				long freq = OnGetFrequency();
-				string response = "IF";
-				response += String.Format("{0:00000000000}", freq);
-				response += "000000000000000000000000;";
+			string response = _pktprocessor.process(data);
+			if (! string.IsNullOrEmpty(response))
 				_port.Write(response);
-			}
-			if (data.StartsWith("FA", StringComparison.Ordinal)) {
-				long freq;
-				if (long.TryParse(data.Substring(2), out freq)) {
-					log("Received on COM port: "+data);
-					if (OnFrequencyChange == null) return;
-					OnFrequencyChange(this, freq);
-					log("Changing frequency to: "+freq.ToString("N0"));
-				}
-			}
         }
-		
-		void log(String str) {
-			if (logger!=null) {
-				logger.WriteLine("[" + DateTime.Now + "]: " + str.Trim());
-			}
-		}
-		
-		void prepareLogger() {
-			try {
-				if (logger != null) {
-					logger.Close();
-				}
-				logger = new StreamWriter(new FileStream("serial.log",
-				                                         FileMode.Append,
-				                                         FileAccess.Write,
-				                                         FileShare.ReadWrite,
-				                                       	 1024,
-				                                         FileOptions.WriteThrough));
-				logger.AutoFlush = true;
-			} catch (Exception) {
-				logger = null;
-			}
-		}
-		void closeLogger() {
-			try {
-				if (logger != null) {
-					logger.Close();
-				}
-				logger = null;
-			} catch (Exception) {
-				logger = null;
-			}
-		}
 	}
 }
