@@ -101,8 +101,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SerialPktProcessor.cs" />
-    <Compile Include="SerialPort.cs" />
+    <Compile Include="ProtocolInterface.cs" />
+    <Compile Include="Protocol_TS50.cs" />
+    <Compile Include="SerialPortCtrl.cs" />
     <!--<Reference Include="SDRSharp.PanView, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>../Common/SDRSharp.PanView.dll</HintPath>
@@ -115,6 +116,7 @@
     </Compile>
     <Compile Include="SerialControllerPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerialRadioInterface.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="SerialControllerPanel.resx">

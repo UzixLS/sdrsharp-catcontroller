@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 
 using SDRSharp.Common;
@@ -7,14 +8,14 @@ using SDRSharp.Radio;
 
 namespace SDRSharp.SerialController
 {
-    public class SerialControllerPlugin: ISharpPlugin
+    public class SerialControllerPlugin: ISharpPlugin,SerialRadioInterface
     {
         private const string _displayName = "SerialController";
 
         private ISharpControl _control;
         private SerialControllerPanel _controlPanel;
         private SerialPortCtrl _serialPort;
-        private SerialPktProcessor _serialPktProcessor;
+        private ProtocolInterface _Protocol;
 
         public string DisplayName
         {
@@ -34,36 +35,11 @@ namespace SDRSharp.SerialController
         public void Initialize(ISharpControl control)
         {
             _control = control;
-
-            _serialPktProcessor = new SerialPktProcessor();
-			_serialPktProcessor.OnFrequencyChange += UpdateFrequency;
-			_serialPktProcessor.OnGetFrequency += GetFrequency;
-			_serialPktProcessor.OnModeChange += UpdateDemodulation;
-			_serialPktProcessor.OnGetMode += GetDemodulation;
-
-            _serialPort = new SerialPortCtrl(_serialPktProcessor);
-            _serialPort.separator = _serialPktProcessor.separator;
-            
+			_control.PropertyChanged += PropertyChangedHandler;
+            _Protocol = new Protocol_TS50(this);
+            _serialPort = new SerialPortCtrl(_Protocol);           
             _controlPanel = new SerialControllerPanel(_serialPort);
             _controlPanel.readSettings();
-        }
-        
-        void UpdateFrequency(object sender, long freq) {
-        	_control.Frequency = freq;
-        	_controlPanel.addToLogList(freq.ToString("N0")+" Hz");
-        }
-        
-        long GetFrequency() {
-        	return _control.Frequency;
-        }
-        
-        void UpdateDemodulation(object sender, DetectorType mode) {
-        	_control.DetectorType = mode;
-        	_controlPanel.addToLogList(mode.ToString());
-        }
-        
-        DetectorType GetDemodulation() {
-        	return _control.DetectorType;
         }
         
         public void Close()
@@ -71,5 +47,39 @@ namespace SDRSharp.SerialController
         	_serialPort.closePort();
         	_controlPanel.saveSettings();
         }        
+
+        
+        void PropertyChangedHandler(object sender, PropertyChangedEventArgs e)
+		{
+        	if (_serialPort.IsOpen)
+		    {
+        		string response = _Protocol.PktTransmitter(e.PropertyName);
+				if (! string.IsNullOrEmpty(response))
+					_serialPort.DataTransmit(response);
+		    }
+		}
+        
+        public long RadioFrequency
+        {
+        	get {
+        		return _control.Frequency;
+        	}
+        	set {
+        		_controlPanel.addToLogList(value.ToString("N0")+" Hz");
+        		_control.Frequency = value;
+        	}
+        }
+            
+        public DetectorType RadioMode
+        {
+        	get {
+        		return _control.DetectorType;
+        	}
+        	set {
+	        	_controlPanel.addToLogList(value.ToString());
+	        	_control.DetectorType = value;        		
+        	}
+        }
+        
     }
 }

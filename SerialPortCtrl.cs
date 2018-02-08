@@ -11,40 +11,33 @@ using System.Windows.Forms;
 
 namespace SDRSharp.SerialController
 {
-	/// <summary>
-	/// Description of SerialPort.
-	/// </summary>
 	public class SerialPortCtrl
 	{
 		public bool IsOpen {
 			get { return _port != null && _port.IsOpen; }
 		}
 		
-		char _separator;
-		public char separator {
-			get { return separator; }
-			set { this._separator = value; }
-		}
-		
 		SerialPort _port;
-		SerialPktProcessor _pktprocessor;
+		ProtocolInterface _protocol;
 		
-		public SerialPortCtrl( SerialPktProcessor pktprocessor )
+		public SerialPortCtrl(ProtocolInterface protocol)
 		{
-			_pktprocessor = pktprocessor;
+			_protocol = protocol;
 		}
 		
     	public static string[] GetAllPorts()
 		{
 			try {
 				return SerialPort.GetPortNames();
-    		} catch (Exception e) {
-    			MessageBox.Show("Cannot read port list:\n"+e.ToString(), "SerialController", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    		}
+    		catch (Exception e) {
+    			MessageBox.Show("Couldn't read port list:\n"+e.ToString(), "SerialController", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return new string[0];
 			}
 		}
 		
-		public bool openPort(string portName) {
+		public bool openPort(string portName)
+		{
 			try {
 	    		if (_port != null && _port.IsOpen)
 					return false;
@@ -53,40 +46,44 @@ namespace SDRSharp.SerialController
     				return false;
 
 				_port = new SerialPort(portName, 9600, Parity.None, 8, StopBits.One);
-				_port.DataReceived += new SerialDataReceivedEventHandler( Port_DataReceived );
+				_port.DataReceived += new SerialDataReceivedEventHandler( DataReceivedHandler );
 						
 				if (_port != null) {
 					_port.Open();
 					return true;
 				}
 				return false;
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
     			MessageBox.Show("Couldn't open port "+portName+":\n"+e.ToString(), "SerialController",
     			                MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 		}
 		
-		public bool closePort() {
-			if (_port != null) {
+		public bool closePort()
+		{
+			if (_port != null)	{
 				if (_port.IsOpen) {
 					try {
 						_port.Close();
 						return true;
-					} catch (IOException) {
+					}
+					catch (IOException)	 {
 						return false;
 					}
-				} else {
+				}
+				else {
 					return false;
 				}
 			}
 			return false;
 		}
 		
-		void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
+		void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
 			string data = "";
-			while (data.IndexOf(_separator) < 0) {
+			while (data.IndexOf(_protocol.EndMarker) < 0) {
 				byte[] bytes = new byte[_port.BytesToRead+32];
 				try {
 					_port.Read(bytes, 0, _port.BytesToRead);
@@ -96,11 +93,16 @@ namespace SDRSharp.SerialController
 				}
 				data += System.Text.Encoding.UTF8.GetString(bytes);
 			}
-			data = data.Substring(0, data.IndexOf(_separator));
+			data = data.Substring(0, data.IndexOf(_protocol.EndMarker));
 			
-			string response = _pktprocessor.process(data);
+			string response = _protocol.PktReceiver(data);
 			if (! string.IsNullOrEmpty(response))
-				_port.Write(response);
+				DataTransmit(response);
         }
+		
+		public void DataTransmit(string data)
+		{
+			_port.Write(data);
+		}
 	}
 }

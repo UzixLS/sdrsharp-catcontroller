@@ -3,6 +3,7 @@ using System.Windows.Forms;
 
 using SDRSharp.Radio;
 
+
 namespace SDRSharp.SerialController
 {
     public partial class SerialControllerPanel : UserControl
@@ -25,7 +26,7 @@ namespace SDRSharp.SerialController
 		}
 		
 		public void addToLogList(String log) {
-			lbLog.Items.Add(log);
+			lbLog.Items.Add(DateTime.Now.ToString("[HH:mm:ss] ") + log);
 			// scroll to bottom
 			lbLog.SelectedIndex = lbLog.Items.Count - 1;
 			lbLog.SelectedIndex = -1;
