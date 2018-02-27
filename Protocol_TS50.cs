@@ -56,10 +56,10 @@ namespace SDRSharp.SerialController
             return response;
     	}
     	
-		public string PktReceiver(string ReveivedData)
+		public string PktReceiver(string ReceivedData)
 		{
 			string response = "";
-			if (ReveivedData.StartsWith("IF", StringComparison.Ordinal)) {
+			if (ReceivedData.StartsWith("IF", StringComparison.Ordinal)) {
 				response += "IF";
 				response += String.Format("{0:00000000000}", _radio.RadioFrequency);
 				response += "0000000000000000";
@@ -67,15 +67,15 @@ namespace SDRSharp.SerialController
 				response += "0000000";
 				response += EndMarker;
 			}
-			if (ReveivedData.StartsWith("FA", StringComparison.Ordinal)) {
+			if (ReceivedData.StartsWith("FA", StringComparison.Ordinal)) {
 				long freq;
-				if (long.TryParse(ReveivedData.Substring(2), out freq)) {
+				if (long.TryParse(ReceivedData.Substring(2), out freq)) {
 					_radio.RadioFrequency = freq;
 				}
 			}
-			if (ReveivedData.StartsWith("MD", StringComparison.Ordinal)) {
+			if (ReceivedData.StartsWith("MD", StringComparison.Ordinal)) {
 				uint mode;
-				if (uint.TryParse(ReveivedData.Substring(2), out mode)) {
+				if (uint.TryParse(ReceivedData.Substring(2), out mode)) {
 					_radio.RadioMode = int2mode[mode];
 				}
 			}
