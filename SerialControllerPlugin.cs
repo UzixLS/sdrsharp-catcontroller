@@ -17,6 +17,10 @@ namespace SDRSharp.SerialController
         private SerialPortCtrl _serialPort;
         private ProtocolInterface _Protocol;
 
+		long _LastRadioFrequency;
+		DetectorType _LastRadioMode;
+
+		
         public string DisplayName
         {
             get { return _displayName; }
@@ -36,6 +40,8 @@ namespace SDRSharp.SerialController
         {
             _control = control;
 			_control.PropertyChanged += PropertyChangedHandler;
+			_LastRadioFrequency = _control.Frequency;
+			_LastRadioMode = _control.DetectorType;
             _Protocol = new Protocol_TS50(this);
             _serialPort = new SerialPortCtrl(_Protocol);           
             _controlPanel = new SerialControllerPanel(_serialPort);
@@ -51,6 +57,17 @@ namespace SDRSharp.SerialController
         
         void PropertyChangedHandler(object sender, PropertyChangedEventArgs e)
 		{
+            switch (e.PropertyName)
+            {
+                case "Frequency":
+            		if (_LastRadioFrequency == _control.Frequency)
+            			return;
+                    break;
+                case "DetectorType":
+                    if( _LastRadioMode == _control.DetectorType)
+                    	return;
+                    break;
+            }
         	if (_serialPort.IsOpen)
 		    {
         		string response = _Protocol.PktTransmitter(e.PropertyName);
@@ -65,6 +82,7 @@ namespace SDRSharp.SerialController
         		return _control.Frequency;
         	}
         	set {
+        		_LastRadioFrequency = value;
         		_controlPanel.addToLogList(value.ToString("N0")+" Hz");
         		_control.Frequency = value;
         	}
@@ -76,6 +94,7 @@ namespace SDRSharp.SerialController
         		return _control.DetectorType;
         	}
         	set {
+        		_LastRadioMode = value;
 	        	_controlPanel.addToLogList(value.ToString());
 	        	_control.DetectorType = value;        		
         	}

@@ -11,6 +11,7 @@ namespace SDRSharp.SerialController
 	public interface ProtocolInterface
 	{
 		string EndMarker { get; }
+		int MaxLen { get; }
 		string PktTransmitter(string ChangedProperty);
 		string PktReceiver(string ReveivedData);
 	}

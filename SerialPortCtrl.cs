@@ -19,10 +19,12 @@ namespace SDRSharp.SerialController
 		
 		SerialPort _port;
 		ProtocolInterface _protocol;
+		string _received;
 		
 		public SerialPortCtrl(ProtocolInterface protocol)
 		{
 			_protocol = protocol;
+			_received = "";
 		}
 		
     	public static string[] GetAllPorts()
@@ -82,22 +84,22 @@ namespace SDRSharp.SerialController
 		
 		void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
-			string data = "";
-			while (data.IndexOf(_protocol.EndMarker) < 0) {
-				byte[] bytes = new byte[_port.BytesToRead+32];
-				try {
-					_port.Read(bytes, 0, _port.BytesToRead);
+			while (_port.BytesToRead > 0) {
+				if (_received.Length > _protocol.MaxLen)
+					_received = "";
+				
+				string input = ((char)_port.ReadChar()).ToString();
+				if (input == _protocol.EndMarker) {
+					string response = _protocol.PktReceiver(_received);
+					if (! string.IsNullOrEmpty(response)) {
+						DataTransmit(response);
+					}
+					_received = "";
 				}
-				catch (Exception) {
-					return;
+				else {
+					_received += input;
 				}
-				data += System.Text.Encoding.UTF8.GetString(bytes);
 			}
-			data = data.Substring(0, data.IndexOf(_protocol.EndMarker));
-			
-			string response = _protocol.PktReceiver(data);
-			if (! string.IsNullOrEmpty(response))
-				DataTransmit(response);
         }
 		
 		public void DataTransmit(string data)
